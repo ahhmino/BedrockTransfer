@@ -1,5 +1,6 @@
 package com.ahhmino.bedrocktransfer;
 
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.sign.Side;
@@ -49,7 +50,7 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
         if (!(signBlock.getState() instanceof Sign sign)) return;
 
         // Read port from the first line
-        String portText = sign.getSide(Side.FRONT).line(0).toString();
+        String portText = PlainTextComponentSerializer.plainText().serialize(sign.getSide(Side.FRONT).line(0));
         System.out.println(sign.getSide(Side.FRONT).line(0));
         System.out.println(portText);
         if (portText.isEmpty()) return;
