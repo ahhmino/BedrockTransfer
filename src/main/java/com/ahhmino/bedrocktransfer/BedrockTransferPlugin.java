@@ -1,4 +1,4 @@
-package com.ahhmino.bedrockTransfer;
+package com.ahhmino.bedrocktransfer;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
