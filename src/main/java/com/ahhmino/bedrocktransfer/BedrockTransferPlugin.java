@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.geyser.api.GeyserApi;
 
@@ -27,6 +28,16 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("BedrockTransfer enabled");
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        Block block = player.getLocation().getBlock();
+
+        if (block.getType().name().endsWith("_PRESSURE_PLATE")) {
+            player.teleport(player.getLocation().add(5, 0, 0));
+        }
     }
 
     @EventHandler
