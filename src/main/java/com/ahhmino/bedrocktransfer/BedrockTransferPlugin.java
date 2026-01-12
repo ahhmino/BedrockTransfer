@@ -33,9 +33,6 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
     public void onPlayerStep(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        // Only Bedrock players
-        if (!GeyserApi.api().isBedrockPlayer(player.getUniqueId())) return;
-
         // Only trigger when physically stepping on a block (pressure plate)
         if (event.getAction() != Action.PHYSICAL) return;
 
