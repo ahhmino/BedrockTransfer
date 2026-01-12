@@ -24,12 +24,12 @@ import java.util.UUID;
 
 public final class BedrockTransferPlugin extends JavaPlugin implements Listener {
 
-    private static final String TARGET_IP = "mc.flyingpineapples.com"; // static IP for all transfers
     private static final int SIGN_OFFSET = 2; // blocks behind the plate
     private final Map<UUID, Long> spawnTimes = new HashMap<>();
 
     @Override
     public void onEnable() {
+        saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("BedrockTransfer enabled");
     }
@@ -86,17 +86,18 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
     }
 
     private void transfer(Player player, int port) {
+        String target_address = getConfig().getString("target-address", "");
         if (GeyserApi.api().isBedrockPlayer(player.getUniqueId())) {
             GeyserApi.api().transfer(
                     player.getUniqueId(),
-                    TARGET_IP,
+                    target_address,
                     port
             );
         } else {
             ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
             PacketContainer packet = manager.createPacket(PacketType.Play.Server.TRANSFER);
-            packet.getStrings().write(0, TARGET_IP);        // host
+            packet.getStrings().write(0, target_address);        // host
             packet.getIntegers().write(0, port + 1);     // port
 
             try {
