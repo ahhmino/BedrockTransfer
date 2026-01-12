@@ -41,7 +41,7 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
         Block block = player.getLocation().getBlock();
 
         if (block.getType().name().endsWith("_PRESSURE_PLATE")) {
-            player.teleport(player.getLocation().add(5, 0, 0));
+            player.teleport(player.getLocation().add(0, 0, 5));
         }
     }
 
