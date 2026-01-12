@@ -80,7 +80,7 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
 
             PacketContainer packet = manager.createPacket(PacketType.Play.Server.TRANSFER);
             packet.getStrings().write(0, TARGET_IP);        // host
-            packet.getIntegers().write(0, port);     // port
+            packet.getIntegers().write(0, port + 1);     // port
 
             try {
                 manager.sendServerPacket(player, packet);
