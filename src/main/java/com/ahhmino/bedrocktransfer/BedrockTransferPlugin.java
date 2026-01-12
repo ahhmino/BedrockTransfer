@@ -17,12 +17,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.geysermc.geyser.api.GeyserApi;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public final class BedrockTransferPlugin extends JavaPlugin implements Listener {
 
     private static final String TARGET_IP = "mc.flyingpineapples.com"; // static IP for all transfers
     private static final int SIGN_OFFSET = 2; // blocks behind the plate
+    private final Map<UUID, Long> spawnTimes = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -33,6 +37,7 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        spawnTimes.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
         Block block = player.getLocation().getBlock();
 
         if (block.getType().name().endsWith("_PRESSURE_PLATE")) {
@@ -43,7 +48,11 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
     @EventHandler
     public void onPlayerStep(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        long joined = spawnTimes.getOrDefault(player.getUniqueId(), 0L);
 
+        if (System.currentTimeMillis() - joined < 1000) { // 1 second cooldown
+            return; // ignore trigger
+        }
         // Only trigger when physically stepping on a block (pressure plate)
         if (event.getAction() != Action.PHYSICAL) return;
 
