@@ -38,11 +38,7 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         spawnTimes.put(event.getPlayer().getUniqueId(), System.currentTimeMillis());
-        Block block = player.getLocation().getBlock();
-
-        if (block.getType().name().endsWith("_PRESSURE_PLATE")) {
-            player.teleport(player.getLocation().add(0, 0, -5));
-        }
+        player.teleport(player.getLocation().add(0, 0, -5));
     }
 
     @EventHandler
@@ -51,6 +47,7 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
         long joined = spawnTimes.getOrDefault(player.getUniqueId(), 0L);
 
         if (System.currentTimeMillis() - joined < 1000) { // 1 second cooldown
+            getLogger().info("Ignoring due to spawn cooldown");
             return; // ignore trigger
         }
         // Only trigger when physically stepping on a block (pressure plate)
