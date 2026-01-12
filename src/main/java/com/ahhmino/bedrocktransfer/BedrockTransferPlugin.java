@@ -1,5 +1,9 @@
 package com.ahhmino.bedrocktransfer;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketContainer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -44,15 +48,15 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
         // Determine the block 2 behind the plate (opposite of the plate's facing)
         // Simple approximation: use the player’s facing relative to plate
         Block signBlock = plate.getRelative(Objects.requireNonNull(player.getLocation().getBlock().getFace(plate)), SIGN_OFFSET);
-        System.out.println(signBlock);
+        getLogger().info(signBlock.toString());
 
         // Must be a sign
         if (!(signBlock.getState() instanceof Sign sign)) return;
 
         // Read port from the first line
         String portText = PlainTextComponentSerializer.plainText().serialize(sign.getSide(Side.FRONT).line(0));
-        System.out.println(sign.getSide(Side.FRONT).line(0));
-        System.out.println(portText);
+        getLogger().info(sign.getSide(Side.FRONT).line(0).toString());
+        getLogger().info(portText);
         if (portText.isEmpty()) return;
 
         int port;
@@ -68,10 +72,24 @@ public final class BedrockTransferPlugin extends JavaPlugin implements Listener 
     }
 
     private void transfer(Player player, int port) {
-        GeyserApi.api().transfer(
-                player.getUniqueId(),
-                TARGET_IP,
-                port
-        );
+        if (GeyserApi.api().isBedrockPlayer(player.getUniqueId())) {
+            GeyserApi.api().transfer(
+                    player.getUniqueId(),
+                    TARGET_IP,
+                    port
+            );
+        } else {
+            ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+
+            PacketContainer packet = manager.createPacket(PacketType.Play.Server.TRANSFER);
+            packet.getStrings().write(0, TARGET_IP);        // host
+            packet.getIntegers().write(0, port);     // port
+
+            try {
+                manager.sendServerPacket(player, packet);
+            } catch (Exception e) {
+                getLogger().severe(String.format("Failed to send Java player %s due to error: %s", player.getName(), e));
+            }
+        }
     }
 }
